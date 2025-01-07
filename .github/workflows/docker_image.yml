@@ -1,0 +1,67 @@
+name: Build and Push Docker Image to Dockerhub
+
+on:
+  workflow_dispatch:  # This allows manual triggering via the GitHub UI
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+     - name: Checkout code
+       uses: actions/checkout@v3
+    
+    # Read and increment the tag version
+     - name: Get tag from file and Increment Tag
+       id: version
+       run: |
+          # Read the tag from the 'tag.txt' file (change file name if needed)
+          tag_version=$(cat ./tag.txt)
+          echo "Current tag version: $tag_version"
+
+          # Calculate the new tag version by incrementing the current version
+          new_tag_version=$((tag_version + 1))
+          echo "New tag version: $new_tag_version"
+
+          # Export new and old tags for later steps
+          echo "tag=rest-backend-github-v$new_tag_version" >> $GITHUB_ENV
+          echo "old_tag=rest-backend-github-v$tag_version" >> $GITHUB_ENV
+          
+          # Update tag-version.txt with the new version for the next build
+          echo "$new_tag_version" > tag.txt
+
+    # Commit Changes
+     - name: Commit Docker Compose file & Tag Version file
+       env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+       run: |
+        # Configure Git user details
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          
+        # Stage updated files for commit
+          git add tag.txt
+        # Commit changes, skipping commit if no changes detected
+          git commit -m "Update to tag version ${{ env.tag }}" || echo "No changes to commit"
+        # Push the changes to the repository
+          git push "https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" HEAD:${{ github.ref_name }}
+  
+      
+     - name: Set up Docker Buildx
+       uses: docker/setup-buildx-action@v2
+
+     - name: Log in to Docker Hub 
+       uses: docker/login-action@v2
+       with:
+        username: ${{ secrets.DOCKERHUB_USERNAME }}
+        password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+     - name: Build and push Docker image
+       uses: docker/build-push-action@v4
+       with:
+        context: .
+        push: true
+        tags: ${{ secrets.DOCKERHUB_USERNAME }}/dockerassignment1:${{ env.tag }}
