@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: application-redis 
+  cache:
+    type: redis
+  redis:
+    host: redis
+    port: 6379
+
+cache:
+  config:
+    entryTtl: 60
+    users:
+      entryTtl: 30
+    authors:
+      entryTtl: 30
+    books:
+     entryTtl: 30
