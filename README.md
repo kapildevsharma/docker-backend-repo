@@ -13,3 +13,13 @@ It's useful to pull the latest docker images from docker hub and deploy into doc
 In this repo, CDPipeline.sh file which contains the step to deploy the our application into docker server. When we will execute this file then pull latest code of our back-end repo. After it, it will use docker-compose file to deploy application with pulling latest images from dcoker hub.
 
 If we want to down all container then go to location of code and execute the docker-compse down command.
+
+Usages : 
+
+backend v7 and ui 3 image is used for promoties and grafana interface with spring boot and microservices
+
+Grafana : http://localhost:3000/d/sOae4vCnk/spring-boot-statistics?orgId=1&refresh=5s
+Promoties : http://localhost:9090/graph?g0.expr=logback_events_total%7Binstance%3D%22uiContainer%3A8484%22%2C%20job%3D%22microservices%22%2C%20level%3D%22info%22%7D&g0.tab=0&g0.stacked=0&g0.show_exemplars=0&g0.range_input=1h
+
+Actuator:  http://localhost:8484/actuator/prometheus
+

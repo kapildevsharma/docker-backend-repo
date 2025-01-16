@@ -1,6 +1,30 @@
 version: "3.8"
 
 services:
+  prometheus:
+    image: prom/prometheus:v2.38.0
+    container_name: prometheus
+    restart: unless-stopped
+    volumes:
+     - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+        - "9090:9090"
+    networks:
+        - networkmysql
+
+  grafana:
+    image: grafana/grafana:8.4.0
+    container_name: grafana
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: admin  # Set the Grafana admin password
+    ports:
+      - "3000:3000"
+    networks:
+      - networkmysql
+    depends_on:
+      - prometheus
+  
   # MySQL Database
   mysql:
     image: mysql:latest
@@ -39,7 +63,7 @@ services:
 
   # Spring Boot backend
   rest-backend:
-    image: kapilmika485/dockerassignment1:rest-backend-github-v4
+    image: kapilmika485/dockerassignment1:rest-backend-github-v7
     container_name: restContainer
     networks:
       - networkmysql
@@ -52,15 +76,15 @@ services:
       redis: # web-app depends on db-service to be healthy
         condition: service_healthy  # Waits until db-service is healthy
     environment:
-      MYSQL_HOST: mysql
-      MYSQL_PORT: 3306
-      MYSQL_DB_NAME: rest_db
-      MYSQL_USER: root
-      MYSQL_PASSWORD: root
+      MYSQL_HOST: ${MYSQL_HOST}  # Host for MySQL
+      MYSQL_PORT: ${MYSQL_PORT}   # Port Number of MySQL
+      MYSQL_DB_NAME: ${MYSQL_DB_NAME}  # Datbase name of MySQL
+      MYSQL_USER: ${MYSQL_USER}     # MySQL username
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}   # Password for the MySQL user
 
   # Spring Boot frontend
   ui-application:
-    image: kapilmika485/dockerassignment1:ui-github-v2
+    image: kapilmika485/dockerassignment1:ui-github-v3
     container_name: uiContainer
     networks:
       - networkmysql
