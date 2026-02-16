@@ -1,12 +1,16 @@
 spring:
   application:
-    name: application-redis 
+    name: application-redis
+
+  # Cache configuration
   cache:
     type: redis
   redis:
     host: redis
     port: 6379
+    enabled: false   # To disable Redis (e.g., in dev without Redis running)
 
+# Cache TTL configuration
 cache:
   config:
     entryTtl: 60

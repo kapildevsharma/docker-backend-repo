@@ -71,11 +71,11 @@ services:
       condition: service_healthy  # Waits until db-service is healthy
      redis: # web-app depends on db-service to be healthy
        condition: service_healthy  # Waits until db-service is healthy
-    environment:
-      MYSQL_HOST: mysql
-      MYSQL_PORT: 3306
-      MYSQL_DB_NAME: rest_db
-      MYSQL_USER: root
+   # environment:
+    #  MYSQL_HOST: mysql
+   #   MYSQL_PORT: 3306
+   #   MYSQL_DB_NAME: rest_db
+   #   MYSQL_USER: root
     environment:
       MYSQL_HOST: ${MYSQL_HOST}  # Host for MySQL
       MYSQL_PORT: ${MYSQL_PORT}   # Port Number of MySQL

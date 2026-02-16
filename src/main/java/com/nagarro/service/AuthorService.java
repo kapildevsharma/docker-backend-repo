@@ -21,23 +21,19 @@ public class AuthorService {
 	private AuthorRepo authorRepo;
 
 	public Optional<Author> findById(int id){
-		Optional<Author> opt_author = authorRepo.findById(id);
-		return opt_author;
+        return authorRepo.findById(id);
 	}
 	
 	public List<Author> findAll(){
 		logger.info("****author is Cacheable");
-		List<Author> authors = authorRepo.findAll();
-		return authors;
+        return authorRepo.findAll();
 	}
 	
 	public Author findByAuthName(String name) {
-		Author author = authorRepo.findByAuthName(name);
-		return author;
+        return authorRepo.findByAuthName(name);
 	}
 	
 	public Author save(Author author) {
-		Author savedAuthor = authorRepo.save(author);
-		return savedAuthor;
+        return authorRepo.save(author);
 	}
 }

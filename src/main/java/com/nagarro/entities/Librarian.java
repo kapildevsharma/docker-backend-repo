@@ -3,8 +3,7 @@ package com.nagarro.entities;
 import java.io.Serial;
 import java.io.Serializable;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
 public class Librarian implements Serializable {

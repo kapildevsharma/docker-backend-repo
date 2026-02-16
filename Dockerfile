@@ -1,6 +1,5 @@
 # Use a minimal base image
-FROM openjdk:11-jre-slim
-
+FROM openjdk:17-jdk-alpine
 # Add a non-root user
 RUN addgroup --system appgroup && adduser --system appuser --ingroup appgroup
 

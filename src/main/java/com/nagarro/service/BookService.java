@@ -21,33 +21,38 @@ public class BookService {
 
 	@Autowired
 	private BookRepo bookRepo;
-	
+
+    @Cacheable(cacheNames = CacheNames.BOOKS, key = "'allBooks'")
 	public List<Book> findAll(){
         logger.info("Fetching all books from the database (Cacheable).");
-		List<Book> books = bookRepo.findAll();
-		return books;
+        return bookRepo.findAll();
 	}
-	
+    /**
+     * Fetch a book by ID. Cached individually.
+     */
     @Cacheable(cacheNames = CacheNames.BOOKS, key = "#id")
 	public Optional<Book> findById(int id){
         logger.info("Fetching book with ID {} from the database (Cacheable).", id);
-		Optional<Book> op_book = bookRepo.findById(id);
-		return op_book;
+        return bookRepo.findById(id);
 	}
-	
+    /**
+     * Save or update a book. Updates cache for this book ID.
+     */
     @CachePut(cacheNames = CacheNames.BOOKS, key = "#book.bookId")
 	public Book save(Book book) {
     	if (book == null || book.getBookId() ==0 || book.getAuthor() == null) {
             throw new IllegalArgumentException("Book and author cannot be null.");
         }
-        logger.info("Saving book with ID {} to the database (CachePut).", book.toString());
+        logger.info("Saved/Updated book with ID {} to the database (CachePut).", book.toString());
         Book savedBook = bookRepo.save(book);
         refreshCache(); // Refresh the cache after saving
         return savedBook;
 	}
-	
-    @CacheEvict(cacheNames = CacheNames.BOOKS, allEntries = true)
-	public void delete(Book book) {
+    /**
+     * Delete a book. Evicts only the deleted book from cache.
+     */
+    @CacheEvict(cacheNames = CacheNames.BOOKS, key = "#book.bookId")
+    public void delete(Book book) {
     	if (book == null || book.getBookId() == 0) {
             throw new IllegalArgumentException("Book or bookId cannot be null");
         }
@@ -55,7 +60,9 @@ public class BookService {
 		bookRepo.delete(book);
 		refreshCache(); // Refresh the cache after deletion
 	}
-    
+    /**
+     * Clear all cache entries for BOOKS.
+     */
     @CacheEvict(cacheNames = CacheNames.BOOKS, allEntries = true)
     public void clearCache() {
         logger.info("Clearing all entries in the BOOKS cache.");
